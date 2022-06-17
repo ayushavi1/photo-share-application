@@ -9,6 +9,7 @@ import Users from './user/pages/Users';
 import NewPlace from './places/pages/NewPlace';
 import UserPlaces from './places/pages/UserPlaces';
 import UpdatePlace from './places/pages/UpdatePlace';
+import Authenticate from './user/pages/Authenticate';
 import MainNavigation from './shared/components/Navigation/MainNavigation';
 
 const App = () => {
@@ -28,6 +29,9 @@ const App = () => {
           </Route>
           <Route path='/places/:placeId'>
             <UpdatePlace />
+          </Route>
+          <Route path='/auth' exact>
+            <Authenticate />
           </Route>
           <Redirect to='/' />
         </Switch>
