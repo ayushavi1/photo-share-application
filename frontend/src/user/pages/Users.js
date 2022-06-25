@@ -2,38 +2,29 @@ import React, { useEffect, useState } from 'react';
 
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 import UsersList from '../components/UsersList';
 
 const Users = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [users, setUsers] = useState();
 
   useEffect(() => {
     const fetchUsers = async () => {
-      setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:5000/api/users');
-        const responseData = await response.json();
-        if (!response.ok) {
-          throw new Error(responseData.message);
-        }
+        const responseData = await sendRequest(
+          'http://localhost:5000/api/users'
+        );
+
         setUsers(responseData.users);
-      } catch (err) {
-        setError(err.message || 'Something went wrong.');
-      }
-      setIsLoading(false);
+      } catch (err) {}
     };
     fetchUsers();
-  }, []);
-
-  const errorHandler = () => {
-    setError(null);
-  };
+  }, [sendRequest]);
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onClear={errorHandler} />
+      <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div>
           <LoadingSpinner />
