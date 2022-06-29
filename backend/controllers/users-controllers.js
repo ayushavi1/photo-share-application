@@ -1,17 +1,7 @@
-const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
-
-// let DUMMY_USERS = [
-//   {
-//     id: 'u1',
-//     name: 'John',
-//     email: 'test@gmail.com',
-//     password: 'tester',
-//   },
-// ];
 
 const getUsers = async (req, res, next) => {
   let users;
@@ -60,7 +50,7 @@ const signup = async (req, res, next) => {
   const createdUser = new User({
     name: name,
     email: email,
-    image: 'https://i.pravatar.cc/300?u=' + uuidv4(),
+    image: req.file.path,
     password: password,
     places: [],
   });
