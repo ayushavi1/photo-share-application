@@ -1,5 +1,7 @@
 const { validationResult } = require('express-validator');
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
@@ -52,7 +54,10 @@ const signup = async (req, res, next) => {
   try {
     hashedPassword = await bcrypt.hash(password, 11);
   } catch (err) {
-    const error = new HttpError('Something went wrong, could not sign up.', 500);
+    const error = new HttpError(
+      'Something went wrong, could not sign up.',
+      500
+    );
     return next(error);
   }
 
@@ -74,7 +79,24 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(201).json({ user: createdUser.toObject({ getters: true }) });
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: createdUser.id, email: createdUser.email },
+      process.env.JWT_KEY,
+      { expiresIn: '1h' }
+    );
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not sign up.',
+      500
+    );
+    return next(error);
+  }
+
+  res
+    .status(201)
+    .json({ userId: createdUser.id, email: createdUser.email, token: token });
 };
 
 const login = async (req, res, next) => {
@@ -106,9 +128,22 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: alreadySignedUp.id, email: alreadySignedUp.email },
+      process.env.JWT_KEY,
+      { expiresIn: '1h' }
+    );
+  } catch (err) {
+    const error = new HttpError('Something went wrong, could not log in.', 500);
+    return next(error);
+  }
+
   res.json({
-    message: 'Logged in',
-    user: alreadySignedUp.toObject({ getters: true }),
+    userId: alreadySignedUp.id,
+    email: alreadySignedUp.email,
+    token: token,
   });
 };
 

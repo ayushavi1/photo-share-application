@@ -50,7 +50,7 @@ const Authenticate = () => {
           'POST',
           formData
         );
-        authContext.login(responseData.user.id);
+        authContext.login(responseData.userId, responseData.token);
       } catch (err) {}
     } else {
       try {
@@ -65,7 +65,7 @@ const Authenticate = () => {
             'Content-Type': 'application/json',
           }
         );
-        authContext.login(responseData.user.id);
+        authContext.login(responseData.userId, responseData.token);
       } catch (err) {}
     }
   };
